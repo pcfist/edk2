@@ -799,7 +799,7 @@ typedef UINTN  *BASE_LIST;
 **/
 #ifdef MDE_CPU_EBC
   #define STATIC_ASSERT(Expression, Message)
-#elif defined(_MSC_EXTENSIONS)
+#elif defined(_MSC_EXTENSIONS) || defined(__cplusplus)
   #define STATIC_ASSERT static_assert
 #else
   #define STATIC_ASSERT _Static_assert
