@@ -894,12 +894,12 @@ WriteSections64 (
             SymName = (const UINT8 *)"<unknown>";
           }
 
-          Error (NULL, 0, 3000, "Invalid",
+          Warning (NULL, 0, 3000, "Invalid",
                  "%s: Bad definition for symbol '%s'@%#llx or unsupported symbol type.  "
                  "For example, absolute and undefined symbols are not supported.",
                  mInImageName, SymName, Sym->st_value);
 
-          exit(EXIT_FAILURE);
+          continue;
         }
         SymShdr = GetShdrByIndex(Sym->st_shndx);
 
@@ -1012,7 +1012,8 @@ WriteSections64 (
             }
             break;
           default:
-            Error (NULL, 0, 3000, "Invalid", "%s unsupported ELF EM_X86_64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
+            Warning (NULL, 0, 3000, "Invalid", "%s unsupported ELF EM_X86_64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
+            break;
           }
         } else if (mEhdr->e_machine == EM_AARCH64) {
 
@@ -1108,9 +1109,8 @@ WriteSections64 (
           case R_AARCH64_LDST128_ABS_LO12_NC:
             if (((SecShdr->sh_addr ^ SecOffset) & 0xfff) != 0 ||
                 ((SymShdr->sh_addr ^ mCoffSectionsOffset[Sym->st_shndx]) & 0xfff) != 0) {
-              Error (NULL, 0, 3000, "Invalid", "WriteSections64(): %s AARCH64 small code model requires identical ELF and PE/COFF section offsets modulo 4 KB.",
+              Warning (NULL, 0, 3001, "Invalid", "WriteSections64(): %s AARCH64 small code model requires identical ELF and PE/COFF section offsets modulo 4 KB.",
                 mInImageName);
-              break;
             }
             /* fall through */
 
@@ -1138,7 +1138,7 @@ WriteSections64 (
             //
             if ((SymShdr->sh_addr - SecShdr->sh_addr) !=
                 (mCoffSectionsOffset[Sym->st_shndx] - SecOffset)) {
-              Error (NULL, 0, 3000, "Invalid", "WriteSections64(): %s AARCH64 relative relocations require identical ELF and PE/COFF section offsets",
+              Warning (NULL, 0, 3000, "Invalid", "WriteSections64(): %s AARCH64 relative relocations require identical ELF and PE/COFF section offsets",
                 mInImageName);
             }
             break;
@@ -1149,7 +1149,7 @@ WriteSections64 (
             break;
 
           default:
-            Error (NULL, 0, 3000, "Invalid", "WriteSections64(): %s unsupported ELF EM_AARCH64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
+            Warning (NULL, 0, 3000, "Invalid", "WriteSections64(): %s unsupported ELF EM_AARCH64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
           }
         } else {
           Error (NULL, 0, 3000, "Invalid", "Not a supported machine type");
@@ -1229,7 +1229,7 @@ WriteRelocations64 (
                 EFI_IMAGE_REL_BASED_HIGHLOW);
               break;
             default:
-              Error (NULL, 0, 3000, "Invalid", "%s unsupported ELF EM_X86_64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
+              Warning (NULL, 0, 3000, "Invalid", "%s unsupported ELF EM_X86_64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
             }
           } else if (mEhdr->e_machine == EM_AARCH64) {
 
@@ -1274,7 +1274,7 @@ WriteRelocations64 (
              break;
 
             default:
-                Error (NULL, 0, 3000, "Invalid", "WriteRelocations64(): %s unsupported ELF EM_AARCH64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
+                Warning (NULL, 0, 3000, "Invalid", "WriteRelocations64(): %s unsupported ELF EM_AARCH64 relocation 0x%x.", mInImageName, (unsigned) ELF_R_TYPE(Rel->r_info));
             }
           } else {
             Error (NULL, 0, 3000, "Not Supported", "This tool does not support relocations for ELF with e_machine %u (processor type).", (unsigned) mEhdr->e_machine);
